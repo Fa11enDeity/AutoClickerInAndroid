@@ -14,12 +14,7 @@ class AutoClickAccessibilityService : AccessibilityService() {
 
     private val commandReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            when (intent.action) {
-                ACTION_START -> startClicking()
-                ACTION_STOP -> stopClicking()
-                ACTION_SHOW_CONTROLS -> floatingControlManager?.show()
-                ACTION_HIDE_CONTROLS -> floatingControlManager?.hide()
-            }
+            handleCommand(intent.action)
         }
     }
 
@@ -71,6 +66,15 @@ class AutoClickAccessibilityService : AccessibilityService() {
             clickController.stop()
         }
         floatingControlManager?.refreshStatus(false)
+    }
+
+    fun handleCommand(action: String?) {
+        when (action) {
+            ACTION_START -> startClicking()
+            ACTION_STOP -> stopClicking()
+            ACTION_SHOW_CONTROLS -> floatingControlManager?.show()
+            ACTION_HIDE_CONTROLS -> floatingControlManager?.hide()
+        }
     }
 
     companion object {

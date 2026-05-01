@@ -119,7 +119,8 @@ class MainActivity : Activity() {
             Toast.makeText(this, "Grant overlay permission first.", Toast.LENGTH_SHORT).show()
             return
         }
-        sendBroadcast(Intent(action).setPackage(packageName))
+        AutoClickAccessibilityService.instance?.handleCommand(action)
+            ?: sendBroadcast(Intent(action).setPackage(packageName))
     }
 
     private fun refresh() {

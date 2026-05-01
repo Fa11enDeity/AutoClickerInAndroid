@@ -174,6 +174,7 @@ The app needs two user-controlled Android permissions/settings:
 - **Accessibility service**
   - Required for synthetic tap gestures.
   - Enabled through Android accessibility settings.
+  - Detected through both Android's secure enabled-service list and `AccessibilityManager`, because different Android versions and vendor ROMs can expose the enabled service identity in slightly different formats.
 
 Android does not allow normal apps to silently grant these permissions. The current implementation exposes buttons that take the user to the required system screens.
 
@@ -237,6 +238,15 @@ Open the installed app, then:
 
 Both permissions are required. Overlay permission shows the floating controls. Accessibility permission performs the actual tap gestures.
 
+After returning to Auto Clicker, the status text should show:
+
+```text
+Overlay: granted
+Accessibility: enabled
+```
+
+If Android shows the service as enabled but the app still reports it as disabled, make sure the latest APK is installed, then force stop and reopen Auto Clicker. The app checks accessibility state again whenever the main screen resumes.
+
 ### 4. Run a safe click test
 
 Use a harmless test target first, such as Calculator, Notes, an empty text field, or a blank browser page.
@@ -257,6 +267,23 @@ Avoid testing first on payment, delete, messaging, trading, or other irreversibl
 - Use the floating `+` marker to choose the screen coordinate.
 - Use either the main screen or floating panel to start clicking.
 - Use either the main screen or floating panel to stop clicking.
+
+## Troubleshooting
+
+- **Start says accessibility is not enabled**
+  - Confirm that the installed APK is the latest build from this repository.
+  - Open Android accessibility settings and verify that **Auto Clicker** is enabled.
+  - Return to Auto Clicker so the main screen can refresh the permission state.
+  - If the status still shows disabled, force stop Auto Clicker, reopen it, and check again.
+
+- **Floating controls do not appear**
+  - Confirm that overlay permission is granted.
+  - Tap **Show floating controls** after enabling the accessibility service.
+  - Some phones hide overlays while permission dialogs or system settings pages are open; return to a normal app screen before testing.
+
+- **Clicking starts but does not hit the expected target**
+  - Drag the floating `+` marker again. The click coordinate is the center of that marker.
+  - Use a larger interval such as `500` or `1000` ms during testing so it is easier to stop.
 
 ## Current Limitations
 
