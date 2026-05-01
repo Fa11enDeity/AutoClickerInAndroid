@@ -58,14 +58,14 @@ class AutoClickAccessibilityService : AccessibilityService() {
 
     private fun startClicking() {
         clickController.start()
-        floatingControlManager?.refreshStatus(true)
+        floatingControlManager?.setRunning(true)
     }
 
     private fun stopClicking() {
         if (::clickController.isInitialized) {
             clickController.stop()
         }
-        floatingControlManager?.refreshStatus(false)
+        floatingControlManager?.setRunning(false)
     }
 
     fun handleCommand(action: String?) {

@@ -21,9 +21,48 @@ class FloatingControlManager(
     private var panel: View? = null
     private var markerParams: WindowManager.LayoutParams? = null
     private var statusText: TextView? = null
+    private var running = false
 
     fun show() {
-        if (!PermissionState.canDrawOverlays(context) || marker != null) return
+        if (!PermissionState.canDrawOverlays(context)) return
+        if (!running && marker == null) {
+            addMarker()
+        }
+        if (panel == null) {
+            panel = createPanel()
+            val panelParams = overlayParams(width = WindowManager.LayoutParams.WRAP_CONTENT, height = WindowManager.LayoutParams.WRAP_CONTENT).apply {
+                gravity = Gravity.TOP or Gravity.START
+                x = 24
+                y = 120
+            }
+            windowManager.addView(panel, panelParams)
+        }
+        refreshStatus()
+    }
+
+    fun hide() {
+        removeMarker()
+        panel?.let { runCatching { windowManager.removeView(it) } }
+        panel = null
+        statusText = null
+    }
+
+    fun setRunning(running: Boolean) {
+        this.running = running
+        if (running) {
+            removeMarker()
+        } else if (panel != null && marker == null) {
+            addMarker()
+        }
+        refreshStatus()
+    }
+
+    fun refreshStatus() {
+        val settings = SettingsStore.load(context)
+        statusText?.text = "(${settings.x}, ${settings.y}) ${settings.intervalMs}ms ${if (running) "ON" else "OFF"}"
+    }
+
+    private fun addMarker() {
         val settings = SettingsStore.load(context)
         marker = createMarker()
         markerParams = overlayParams(width = 72, height = 72).apply {
@@ -32,29 +71,12 @@ class FloatingControlManager(
             y = settings.y - 36
         }
         windowManager.addView(marker, markerParams)
-
-        panel = createPanel()
-        val panelParams = overlayParams(width = WindowManager.LayoutParams.WRAP_CONTENT, height = WindowManager.LayoutParams.WRAP_CONTENT).apply {
-            gravity = Gravity.TOP or Gravity.START
-            x = 24
-            y = 120
-        }
-        windowManager.addView(panel, panelParams)
-        refreshStatus()
     }
 
-    fun hide() {
-        marker?.let { windowManager.removeView(it) }
-        panel?.let { windowManager.removeView(it) }
+    private fun removeMarker() {
+        marker?.let { runCatching { windowManager.removeView(it) } }
         marker = null
-        panel = null
         markerParams = null
-        statusText = null
-    }
-
-    fun refreshStatus(running: Boolean = false) {
-        val settings = SettingsStore.load(context)
-        statusText?.text = "(${settings.x}, ${settings.y}) ${settings.intervalMs}ms ${if (running) "ON" else "OFF"}"
     }
 
     private fun createMarker(): View {
@@ -110,14 +132,12 @@ class FloatingControlManager(
             text = "Start"
             setOnClickListener {
                 onStart()
-                refreshStatus(true)
             }
         }
         val stop = Button(context).apply {
             text = "Stop"
             setOnClickListener {
                 onStop()
-                refreshStatus(false)
             }
         }
         row.addView(start)

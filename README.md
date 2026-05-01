@@ -10,6 +10,7 @@ AutoClicker is a minimal Android auto clicker app written in Kotlin. It uses And
 - Drag the floating `+` marker to choose the click position.
 - Start repeated tapping from the main screen or floating control panel.
 - Stop repeated tapping from the main screen or floating control panel.
+- Hide the target marker while clicking so the overlay does not intercept its own tap gestures.
 - Persist the last click position and frequency across app launches.
 - Provide shortcuts from the main screen to Android overlay permission and accessibility settings.
 
@@ -129,6 +130,7 @@ AutoClicker/
   - Shows a draggable `+` marker for the click point.
   - Shows a compact floating panel with status, Start, and Stop buttons.
   - Persists marker movement as the selected click position.
+  - Temporarily removes the marker while clicking, then restores it after stopping.
 
 - `SettingsStore.kt`
   - Stores and loads click settings with `SharedPreferences`.
@@ -256,8 +258,9 @@ Use a harmless test target first, such as Calculator, Notes, an empty text field
 3. Tap **Show floating controls**.
 4. Drag the floating `+` marker to the target position.
 5. Tap **Start** in the floating panel.
-6. Confirm that the selected position is tapped repeatedly.
-7. Tap **Stop** in the floating panel to end clicking.
+6. The `+` marker disappears while clicking so taps can reach the app underneath.
+7. Confirm that the selected position is tapped repeatedly.
+8. Tap **Stop** in the floating panel to end clicking. The `+` marker appears again after stopping.
 
 Avoid testing first on payment, delete, messaging, trading, or other irreversible screens.
 
@@ -267,6 +270,7 @@ Avoid testing first on payment, delete, messaging, trading, or other irreversibl
 - Use the floating `+` marker to choose the screen coordinate.
 - Use either the main screen or floating panel to start clicking.
 - Use either the main screen or floating panel to stop clicking.
+- Expect the `+` marker to disappear while clicking; this is intentional.
 
 ## Troubleshooting
 
@@ -283,6 +287,8 @@ Avoid testing first on payment, delete, messaging, trading, or other irreversibl
 
 - **Clicking starts but does not hit the expected target**
   - Drag the floating `+` marker again. The click coordinate is the center of that marker.
+  - The marker should disappear after tapping **Start**. If it remains visible over the target, reinstall the latest APK.
+  - Keep the floating Start/Stop panel away from the target area; the panel remains touchable so you can stop the click loop.
   - Use a larger interval such as `500` or `1000` ms during testing so it is easier to stop.
 
 ## Current Limitations
