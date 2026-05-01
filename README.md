@@ -197,17 +197,66 @@ The repository ignores local build output and `local.properties`. If needed, cre
 sdk.dir=D\:\\Android\\Sdk
 ```
 
-## Basic Usage
+## Install and Test
 
-1. Install and open the app.
-2. Tap **Grant overlay permission** and allow display over other apps.
-3. Tap **Open accessibility settings** and enable the Auto Clicker service.
-4. Return to the app.
-5. Set the click interval in milliseconds.
-6. Tap **Show floating controls**.
-7. Drag the floating `+` marker to the target click position.
-8. Tap **Start** to begin repeated tapping.
-9. Tap **Stop** to end repeated tapping.
+### 1. Build the debug APK
+
+On Windows, run:
+
+```powershell
+cd E:\AutoClicker
+.\gradlew.bat assembleDebug
+```
+
+The generated debug APK is:
+
+```text
+E:\AutoClicker\app\build\outputs\apk\debug\app-debug.apk
+```
+
+### 2. Install the APK
+
+If Android Debug Bridge is available:
+
+```powershell
+adb install -r E:\AutoClicker\app\build\outputs\apk\debug\app-debug.apk
+```
+
+If ADB is not available, copy `app-debug.apk` to the phone and install it manually from the file manager. The phone may ask you to allow installing apps from the current file source.
+
+### 3. Grant required permissions
+
+Open the installed app, then:
+
+1. Tap **Grant overlay permission**.
+2. Allow Auto Clicker to display over other apps.
+3. Return to Auto Clicker.
+4. Tap **Open accessibility settings**.
+5. Enable the **Auto Clicker** accessibility service.
+6. Return to Auto Clicker.
+
+Both permissions are required. Overlay permission shows the floating controls. Accessibility permission performs the actual tap gestures.
+
+### 4. Run a safe click test
+
+Use a harmless test target first, such as Calculator, Notes, an empty text field, or a blank browser page.
+
+1. Enter a click interval, for example `500` for one tap every 500 ms.
+2. Tap **Save frequency**.
+3. Tap **Show floating controls**.
+4. Drag the floating `+` marker to the target position.
+5. Tap **Start** in the floating panel.
+6. Confirm that the selected position is tapped repeatedly.
+7. Tap **Stop** in the floating panel to end clicking.
+
+Avoid testing first on payment, delete, messaging, trading, or other irreversible screens.
+
+## Basic Usage Summary
+
+- Use the main screen to save the click interval and open Android permission pages.
+- Use the floating `+` marker to choose the screen coordinate.
+- Use either the main screen or floating panel to start clicking.
+- Use either the main screen or floating panel to stop clicking.
 
 ## Current Limitations
 
